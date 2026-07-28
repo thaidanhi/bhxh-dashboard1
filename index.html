@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Báo cáo điều hành BHXH/BHYT/BHTN</title>
+<!-- ... (giữ nguyên CSS và thư viện như cũ) ... -->
+<script>
+// ===== THÊM PHẦN NÀY VÀO ĐẦU PHẦN SCRIPT =====
+let autoLoaded = false;
+
+async function autoLoadData() {
+    try {
+        // Hiển thị trạng thái đang tải
+        const uploadBox = document.getElementById("uploadBox");
+        const desc = uploadBox.querySelector('.desc');
+        const originalText = desc.textContent;
+        desc.textContent = '⏳ Đang tải dữ liệu từ server...';
+        
+        // Tải file Excel từ server
+        const response = await fetch('THONG KE.xlsx');
+        if (!response.ok) throw new Error('Không tìm thấy file Excel');
+        
+        const arrayBuffer = await response.arrayBuffer();
+        
+        // Parse dữ liệu
+        const parsed = parseWorkbook(arrayBuffer);
+        parsed.fileName = 'THONG KE.xlsx';
+        
+        // Cập nhật state
+        state = { 
+            data: parsed, 
+            metric: "a", 
+            selectedCoSo: null, 
+            sortDir: "asc", 
+            searchText: "", 
+            warningFilter: "all" 
+        };
+        
+        // Render báo cáo
+        render();
+        autoLoaded = true;
+        
+        // Ẩn form upload
+        document.getElementById("uploadBox").style.display = "none";
+        document.getElementById("app-content").style.display = "block";
+        document.getElementById("resetBtn").style.display = "inline-block";
+        document.getElementById("resetBtn").textContent = "Tải lại dữ liệu";
+        
+    } catch (error) {
+        console.log('Auto-load error:', error.message);
+        // Nếu không tìm thấy file, hiển thị form upload như bình thường
+        const desc = document.getElementById("uploadBox").querySelector('.desc');
+        desc.textContent = '🔍 Không tìm thấy dữ liệu mặc định. Vui lòng chọn file .xlsx để xem báo cáo.';
+        document.getElementById("uploadBox").style.display = "block";
+    }
+}
+
+// Tự động tải khi trang load
+window.addEventListener('DOMContentLoaded', () => {
+    // Đợi một chút để các thành phần khác load xong
+    setTimeout(autoLoadData, 100);
+});
+
+// ===== SỬA LẠI HÀM RESET =====
+// Thay hàm resetBtn cũ bằng:
+document.getElementById("resetBtn").addEventListener("click", () => {
+    if (autoLoaded) {
+        // Nếu đang ở chế độ auto-load, reload lại trang
+        window.location.reload();
+    } else {
+        // Reset như cũ
+        state = { data: null, metric: "a", selectedCoSo: null, sortDir: "asc", searchText: "", warningFilter: "all" };
+        document.getElementById("fileInput").value = "";
+        document.getElementById("searchInput").value = "";
+        document.getElementById("warnSelect").value = "all";
+        render();
+    }
+});
+
+// ... (phần còn lại của code giữ nguyên) ...
+</script>
+</body>
+</html>
