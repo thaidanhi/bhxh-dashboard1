@@ -1,245 +1,74 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Báo cáo điều hành BHXH/BHYT/BHTN</title>
-<style>
-  :root {
-    --bg: #F6F4EE;
-    --surface: #FFFFFF;
-    --border: #E3DFD1;
-    --border-strong: #CFC8B0;
-    --ink: #17324E;
-    --ink-soft: #3B4F63;
-    --muted: #6B7280;
-    --up: #1E7A5C;
-    --up-tint: #EAF4EF;
-    --down: #BC3B30;
-    --down-tint: #FBEDEB;
-    --warn-bg: #FBEAE8;
-    --warn-border: #EEC4BE;
-    --warn-text: #7A2A22;
-    --amber-bg: #FFF8E9;
-    --amber-border: #EFDCAF;
-    --amber-text: #7A5A10;
-    --font-serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
-    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --shadow-sm: 0 1px 2px rgba(23,50,78,0.05), 0 1px 1px rgba(23,50,78,0.04);
-    --shadow-md: 0 4px 14px rgba(23,50,78,0.07);
-  }
-  * { box-sizing: border-box; }
-  body {
-    font-family: var(--font-sans);
-    background: var(--bg);
-    background-image:
-      linear-gradient(var(--bg) 0%, var(--bg) 100%);
-    color: var(--ink-soft);
-    margin: 0;
-    padding: 2rem 1.5rem 4rem;
-    -webkit-font-smoothing: antialiased;
-  }
-  .wrap { max-width: 1040px; margin: 0 auto; }
-
-  .eyebrow {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--up);
-    margin: 0 0 6px;
-  }
-  h1 {
-    font-family: var(--font-serif);
-    font-size: 23px;
-    font-weight: 700;
-    color: var(--ink);
-    margin: 0;
-    letter-spacing: -0.01em;
-    line-height: 1.3;
-  }
-  .sub { font-size: 13px; color: var(--muted); margin: 6px 0 0; }
-  .topbar {
-    display: flex; justify-content: space-between; align-items: flex-end;
-    margin-bottom: 1.75rem; flex-wrap: wrap; gap: 14px;
-    padding-bottom: 1.1rem;
-    border-bottom: 2px solid var(--ink);
-  }
-
-  button, .btn-file {
-    font-family: var(--font-sans);
-    font-size: 13px; font-weight: 600; padding: 8px 15px; border-radius: 8px;
-    border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink-soft);
-    cursor: pointer; transition: border-color .15s ease, color .15s ease, background .15s ease;
-  }
-  button:hover, .btn-file:hover { border-color: var(--ink); color: var(--ink); }
-  button:focus-visible, .search-input:focus-visible, .warn-select:focus-visible {
-    outline: 2px solid var(--up); outline-offset: 1px;
-  }
-
-  .upload-box {
-    background: var(--surface); border: 1.5px dashed var(--border-strong); border-radius: 16px;
-    padding: 3.5rem 2rem; text-align: center; box-shadow: var(--shadow-sm);
-  }
-  .upload-box .icon {
-    width: 40px; height: 40px; margin: 0 auto 14px; color: var(--up);
-  }
-  .upload-box p.title { font-family: var(--font-serif); font-size: 17px; font-weight: 700; color: var(--ink); margin: 0 0 6px; }
-  .upload-box p.desc { font-size: 13px; line-height: 1.55; color: var(--muted); margin: 0 auto 22px; max-width: 440px; }
-  .btn-primary {
-    display: inline-block; padding: 11px 26px; background: var(--ink); color: #fff;
-    border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer;
-    box-shadow: var(--shadow-sm); transition: background .15s ease, transform .15s ease;
-  }
-  .btn-primary:hover { background: var(--up); }
-  .error { color: var(--down); font-size: 13px; margin-top: 16px; font-weight: 600; }
-
-  .kpis { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 22px; }
-  .kpi-card {
-    background: var(--surface); border-radius: 14px; padding: 1.1rem 1.2rem;
-    border: 1px solid var(--border); box-shadow: var(--shadow-sm);
-  }
-  .kpi-card .label {
-    font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
-    color: var(--muted); margin: 0 0 10px;
-  }
-  .kpi-card .value {
-    font-family: var(--font-serif); font-size: 27px; font-weight: 700; margin: 0;
-    color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: -0.01em;
-  }
-  .kpi-card .delta { font-size: 13px; margin: 8px 0 0; font-weight: 700; font-variant-numeric: tabular-nums; }
-
-  .warn-banner {
-    background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 12px;
-    padding: 0.85rem 1.1rem; margin-bottom: 22px; font-size: 13.5px; font-weight: 600;
-    color: var(--warn-text); display: none;
-  }
-
-  .metric-tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
-  .metric-tab {
-    font-size: 13px; font-weight: 600; padding: 7px 16px; border-radius: 22px; cursor: pointer;
-    border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink-soft);
-    transition: all .15s ease;
-  }
-  .metric-tab:hover { border-color: var(--ink); }
-  .metric-tab.active { border-color: var(--ink); background: var(--ink); color: #fff; }
-
-  .card {
-    background: var(--surface); border-radius: 14px; border: 1px solid var(--border);
-    padding: 1.25rem; margin-bottom: 22px; box-shadow: var(--shadow-sm);
-  }
-  .card .hint { font-size: 13px; color: var(--muted); margin: 0 0 12px; }
-
-  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-  th {
-    padding: 8px 8px; border-bottom: 2px solid var(--ink); color: var(--ink);
-    text-align: left; font-weight: 700; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em;
-  }
-  th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
-  td { padding: 9px 8px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
-  tbody tr:hover { background: #FAF9F4; }
-  tbody tr:nth-child(even) { background: #FCFBF7; }
-  tbody tr:nth-child(even):hover { background: #FAF9F4; }
-
-  .row-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
-  .row-actions .btns { display: flex; gap: 8px; flex-wrap: wrap; }
-  .row-actions button { font-size: 12px; padding: 6px 12px; border-radius: 7px; }
-
-  .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-  .search-input {
-    font-family: var(--font-sans); font-size: 13px; padding: 8px 12px; border-radius: 9px;
-    border: 1px solid var(--border-strong); min-width: 220px; flex: 1; color: var(--ink-soft);
-  }
-  .warn-select {
-    font-family: var(--font-sans); font-size: 13px; padding: 8px 12px; border-radius: 9px;
-    border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink-soft);
-  }
-  .result-count { font-size: 12px; color: var(--muted); margin: 0 0 10px; font-weight: 600; }
-
-  td.note-cell { min-width: 190px; }
-  .note-input {
-    width: 100%; font-size: 12px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 7px;
-    resize: vertical; min-height: 30px; font-family: inherit; color: var(--ink-soft); background: var(--surface);
-  }
-  .note-input:focus { border-color: var(--up); outline: none; }
-  .note-input.has-note { background: var(--amber-bg); border-color: var(--amber-border); }
-  .note-saved { font-size: 10px; color: var(--up); margin-left: 4px; opacity: 0; transition: opacity .3s; font-weight: 700; }
-  .note-saved.show { opacity: 1; }
-
-  .special-card { background: var(--amber-bg); border: 1px solid var(--amber-border); border-radius: 14px; padding: 1.15rem 1.25rem; box-shadow: var(--shadow-sm); }
-  .special-card .title { font-family: var(--font-serif); font-size: 14px; font-weight: 700; color: var(--amber-text); margin: 0 0 10px; }
-  .special-row { font-size: 13px; color: var(--amber-text); padding: 5px 0; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-
-  #chartWrap { position: relative; width: 100%; }
-  #app-content { display: none; }
-
-  @media (max-width: 720px) {
-    .kpis { grid-template-columns: 1fr; }
-    .topbar { align-items: flex-start; }
-  }
-</style>
-</head>
-<body>
-<div class="wrap">
-  <div class="topbar">
-    <div>
-      <p class="eyebrow">Bảo hiểm xã hội · Báo cáo điều hành</p>
-      <h1>Người tham gia BHXH, BHYT, BHTN</h1>
-      <p class="sub" id="subHeader"></p>
-    </div>
-    <button id="resetBtn" style="display:none;">Tải lại</button>
-  </div>
-
-  <div class="upload-box" id="uploadBox">
-    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>
-    </svg>
-    <p class="title">Nhập file thống kê hàng tháng</p>
-    <p class="desc" id="uploadDesc">⏳ Đang tải dữ liệu từ server...</p>
-    <label class="btn-primary">Chọn file .xlsx
-      <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none;">
-    </label>
-    <p class="error" id="errorMsg" style="display:none;"></p>
-  </div>
-
-  <div id="app-content">
-    <div class="kpis" id="kpiRow"></div>
-    <div class="warn-banner" id="warnBanner"></div>
-    <div class="metric-tabs" id="metricTabs"></div>
-    <div class="card">
-      <p class="hint" id="chartHint"></p>
-      <div id="chartWrap"><canvas id="mainChart" role="img" aria-label="Biểu đồ chênh lệch theo BHXH cơ sở"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="filter-bar">
-        <input type="text" id="searchInput" class="search-input" placeholder="Tìm theo tên xã / mã xã / BHXH cơ sở...">
-        <select id="warnSelect" class="warn-select">
-          <option value="all">Tất cả mức độ</option>
-          <option value="warn3">Chỉ xã giảm ở cả 3 chỉ tiêu</option>
-          <option value="warnCurrent">Chỉ xã giảm ở chỉ tiêu đang xem</option>
-        </select>
-      </div>
-      <div class="row-actions">
-        <p class="hint" id="tableHint" style="margin:0;"></p>
-        <div class="btns">
-          <button id="clearFilterBtn" style="display:none;">Bỏ lọc cơ sở</button>
-          <button id="clearSearchBtn" style="display:none;">Xóa tìm kiếm</button>
-          <button id="sortToggleBtn">Xem tăng mạnh nhất</button>
-        </div>
-      </div>
-      <p class="result-count" id="resultCount"></p>
-      <table>
-        <thead><tr id="tableHeadRow"></tr></thead>
-        <tbody id="tableBody"></tbody>
-      </table>
-    </div>
-    <div class="special-card" id="specialCard" style="display:none;">
-      <p class="title">Dòng ngoại lệ (không thuộc xã cụ thể)</p>
-      <div id="specialRows"></div>
-    </div>
-  </div>
-</div>
 <script>
-/* ===== BEGIN SheetJS (xlsx) library, embedded for fully offline use ===== */
-/*! xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
-var DO_NOT_EXPORT_CODEPAGE=true;var cptable={version:"1.15.0"};cptable[437]=function(){var e="\0\b\t\n\x0B\f\r !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²■ ",r=[],t={};for(var a=0;a!=e.length;++a){if(e.charCodeAt(a)!==65533)t[e.charAt(a)]=a;r[a]=e.charAt(a)}return{enc:t,dec:r}}();cptable[620]=function(){var e="\0\b\t\n\x0B\f\r !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ÇüéâäàąçêëèïîćÄĄĘęłôöĆûùŚÖÜ¢Ł¥śƒŹŻóÓńŃźż¿⌐¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²■ ",r=[],t={};for(var a=0;a!=e.length;++a){if(e.charCodeAt(a)!==65533)t[e.charAt(a)]=a;r[a]=e.charAt(a)}return{enc:t,dec:r}}();cptable[737]=function(){var e="\0\b\t\n\x0B\f\r !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρσςτυφχψ░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀ωάέήϊίόύϋώΆΈΉΊΌΎΏ±≥≤ΪΫ÷≈°∙·√ⁿ²■ ",r=[],t={};for(var a=0;a!=e.length;++a){if(e.charCodeAt(a)!==65533)t[e.charAt(a)]=a;r[a]=e.charAt(a)}return{enc:t,dec:r}}();cptable[850]=function(){var e="\0\b\t\n\x0B\f\r !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»░▒▓│┤ÁÂÀ©╣║╗╝¢¥┐└┴┬├─┼ãÃ╚╔╩╦╠═╬¤ðÐÊËÈıÍÎÏ┘┌█▄¦Ì▀ÓßÔÒõÕµþÞÚÛÙýÝ¯´­±‗¾¶§÷¸°¨·¹³²■ ",r=[],t={};for(var a=0;a!=e.length;++a){if(e.charCodeAt(a)!==65533)t[e.charAt(a)]=a;r[a]=e.charAt(a)}return{enc:t,dec:r}}();cptable[852]=function(){var e="\0\b\t\n\x0B\f\r !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ÇüéâäůćçłëŐőîŹÄĆÉĹĺôöĽľŚśÖÜŤťŁ×čáíóúĄąŽžĘę¬źČş«»░▒▓│┤ÁÂĚŞ╣║╗╝Żż┐└┴┬├─┼Ăă╚╔╩╦╠═╬¤đĐĎËďŇÍÎě┘┌█▄ŢŮ▀ÓßÔŃńňŠšŔÚŕŰýÝţ´­˝˛ˇ˘§÷¸°¨˙űŘř■ ",r=[],t={};for(var a=0;a!=e.length;++a){if(e.charCodeAt(a)!==65533)t[e.charAt(a)]=a;r[a]=e.charAt(a)}return{enc:t,dec:r}}();cptable[857]=function(){var e="\0\b\t\n\x0B\f\r !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ÇüéâäàåçêëèïîıÄÅÉæÆôöòûùİÖÜø£ØŞşáíóúñÑĞğ¿®¬½¼¡«»░▒▓│┤ÁÂÀ©╣║╗╝¢¥┐└┴┬├─┼ãÃ╚╔╩╦╠═╬¤ºªÊËÈ�ÍÎÏ┘┌█▄¦Ì▀ÓßÔÒõÕµ�×ÚÛÙìÿ¯´­±�¾¶§÷¸°¨·¹³²■ ",r=[],t={};for(var a=0;a!=e.length;++a){if(e.charCodeAt(a)!==65533)t[e.charAt(a)]=a;r[a]=e.charAt(a)}return{enc:t,dec:r}}();cptable[861]=function(){var e="\0\b\t\n\x0B\f\r !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ÇüéâäàåçêëèÐðÞÄÅÉæÆôöþûÝýÖÜø£Ø₧ƒáíóúÁÍÓÚ¿⌐¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²■ ",r=[],t={};for(var a=0;a!=e.length;++a){if(e.charCodeAt(a)!==65533)t[e.charAt(a)]=a;r[a]=e.charAt(a)}return{enc:t,dec:r}}();cptable[865]=function(){var e="\0\b\t\n\x0B\f\r !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø₧ƒáíóúñÑªº¿⌐¬½¼¡«¤░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²■ ",r=[],t={};for(var a=0;a!=e.length;++a){if(e.charCodeAt(a)!==65533)t[e.charAt(a)]=a;r[a]=e.charAt(a)}return{enc:t,dec:r}}();cptable[866]=function(){var e="\0\b\t\n\x0B\f\r !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмноп░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀рстуфхцчшщъыьэюяЁёЄєЇїЎў°∙·√№¤■ ",r=[],t={};for(var a=0;a!=e.length;++a){if(e.charCodeAt(a)!==65533)t[e.charAt(a)]=a;r[a]=e.charAt(a)}return{enc:t,dec:r}}();cptable[874]=function(){var e="\0\b\t\n\x0B\f\r !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~€����…�����������‘’“”•–—�������� กขฃคฅฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรฤลฦวศษสหฬอฮฯะัาำิีึืฺุู����฿เแโใไๅๆ็่้๊๋์ํ๎๏๐๑๒๓๔๕๖๗๘๙๚๛����",r=[],t={};for(var a=0;a!=e.length;++a){if(e.charCodeAt(a)!==65533)t[e.charAt(a)]=a;r[a]=e.charAt(a)}return{enc:t,dec:r}}();cptable[895]=function(){var e="\0\b\t\n\x0B\f\r !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ČüéďäĎŤčěĚĹÍľǪÄÁÉžŽôöÓůÚýÖÜŠĽÝŘťáíóúňŇŮÔšřŕŔ¼§«»░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²■ ",r=[],t={};for(var a=0;a!=e.length;++a){if(e.charCodeAt(a)!==65533)t[e.charAt(a)]=a;r[a]=e.charAt(a)}return{enc:t,dec:r}}();cptable[932]=function(){var e=[],r={},t=[],a;t[0]="\0\b\t\n\x0B\f\r !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~���������������������������������｡｢｣､･ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝﾞﾟ��������������������������������".split("");for(a=0;a!=t[0].length;++a)if(t[0][a].charCodeAt(0)!==65533){r[t[0][a]]=0+a;e[0+a]=t[0][a]}t[129]="����������������������������������������������������������������　、。，．・：；？！゛゜´｀¨＾￣＿ヽヾゝゞ〃仝々〆〇ー―‐／＼～∥｜…‥‘’“”（）〔〕［］｛｝〈〉《》「」『』【】＋－±×�÷＝≠＜＞≦≧∞∴♂♀°′″℃￥＄￠￡％＃＆＊＠§☆★○●◎◇◆□■△▲▽▼※〒→←↑↓〓�����������∈∋⊆⊇⊂⊃∪∩��������∧∨￢⇒⇔∀∃�����������∠⊥⌒∂∇≡≒≪≫√∽∝∵∫∬�������Å‰♯♭♪†‡¶����◯���".split("");for(a=0;a!=t[129].length;++a)if(t[129][a].charCodeAt(0)!==65533){r[t[129][a]]=33024+a;e[33024+a]=t[129][a]}t[130]="�������������������������������������������������������������������������������０１２３４５６７８９�������ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ�������ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ����ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをん��������������".split("");for(a=0;a!=t[130].length;++a)if(t[130][a].charCodeAt(0)!==65533){r[t[130][a]]=33280+a;e[33280+a]=t[130][a]}t[131]="����������������������������������������������������������������ァアィイゥウェエォオカガキギクグケゲコゴサザシジス
+// ===== TỰ ĐỘNG TẢI + FALLBACK UPLOAD =====
+let autoLoaded = false;
+
+async function autoLoadData() {
+    try {
+        const uploadBox = document.getElementById("uploadBox");
+        const desc = document.getElementById("uploadDesc");
+        desc.textContent = '⏳ Đang tải dữ liệu từ server...';
+        
+        // Thử tải file Excel (thử nhiều tên)
+        let response;
+        try {
+            response = await fetch('THONG KE.xlsx');
+        } catch (e) {
+            // Nếu lỗi, thử tên không dấu
+            response = await fetch('data.xlsx');
+        }
+        
+        if (!response.ok) {
+            // Nếu không tìm thấy, thử tên khác
+            response = await fetch('thongke.xlsx');
+        }
+        
+        if (!response.ok) throw new Error('Không tìm thấy file Excel');
+        
+        const arrayBuffer = await response.arrayBuffer();
+        const parsed = parseWorkbook(arrayBuffer);
+        parsed.fileName = 'THONG KE.xlsx';
+        
+        state = { 
+            data: parsed, 
+            metric: "a", 
+            selectedCoSo: null, 
+            sortDir: "asc", 
+            searchText: "", 
+            warningFilter: "all" 
+        };
+        
+        render();
+        autoLoaded = true;
+        document.getElementById("uploadBox").style.display = "none";
+        document.getElementById("app-content").style.display = "block";
+        document.getElementById("resetBtn").style.display = "inline-block";
+        document.getElementById("resetBtn").textContent = "Tải lại";
+        
+    } catch (error) {
+        console.log('Auto-load error:', error.message);
+        // Hiển thị form upload để người dùng upload thủ công
+        const desc = document.getElementById("uploadDesc");
+        desc.textContent = '🔍 Không tìm thấy dữ liệu mặc định. Vui lòng chọn file .xlsx để xem báo cáo.';
+        document.getElementById("uploadBox").style.display = "block";
+        document.querySelector('.btn-primary').style.display = 'inline-block';
+    }
+}
+
+// Tự động tải khi trang load
+window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(autoLoadData, 500);
+});
+
+// Reset
+document.getElementById("resetBtn").addEventListener("click", () => {
+    if (autoLoaded) {
+        window.location.reload();
+    } else {
+        state = { data: null, metric: "a", selectedCoSo: null, sortDir: "asc", searchText: "", warningFilter: "all" };
+        document.getElementById("fileInput").value = "";
+        document.getElementById("searchInput").value = "";
+        document.getElementById("warnSelect").value = "all";
+        render();
+    }
+});
+</script>
