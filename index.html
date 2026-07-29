@@ -11,7 +11,7 @@ async function autoLoadData() {
         // Thử tải file Excel (thử nhiều tên)
         let response;
         try {
-            response = await fetch('THONG KE.xlsx');
+            response = await fetch('data.xlsx');
         } catch (e) {
             // Nếu lỗi, thử tên không dấu
             response = await fetch('data.xlsx');
@@ -19,7 +19,7 @@ async function autoLoadData() {
         
         if (!response.ok) {
             // Nếu không tìm thấy, thử tên khác
-            response = await fetch('thongke.xlsx');
+            response = await fetch('data.xlsx');
         }
         
         if (!response.ok) throw new Error('Không tìm thấy file Excel');
